@@ -9,12 +9,16 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tengtonghann.android.coroutines_mvvm.R
+import com.tengtonghann.android.coroutines_mvvm.model.repository.PostRepository
+import com.tengtonghann.android.coroutines_mvvm.model.retrofit.RetrofitInstance
 import com.tengtonghann.android.coroutines_mvvm.viewmodel.MainActivityViewModel
+import com.tengtonghann.android.coroutines_mvvm.viewmodel.MainViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var mainActivityViewModel: MainActivityViewModel
+    private lateinit var mainViewModelFactory: MainViewModelFactory
 
     companion object {
         const val TAG = "MainActivityLog"
@@ -24,7 +28,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        mainActivityViewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
+        val postService = RetrofitInstance.postService
+        val postRepository = PostRepository(postService)
+
+        mainViewModelFactory = MainViewModelFactory(postRepository)
+
+        mainActivityViewModel = ViewModelProvider(this, mainViewModelFactory).get(MainActivityViewModel::class.java)
         mainActivityViewModel.getPostResponse().observe(this, Observer { postListResponse ->
             recyclerViewPost.also {
                 it.layoutManager = LinearLayoutManager(this)
@@ -36,11 +45,11 @@ class MainActivity : AppCompatActivity() {
 //            Log.d(TAG, it.size.toString())
         })
 
-        mainActivityViewModel.progressBar.observe(this, Observer {
+        mainActivityViewModel.getProgressBar().observe(this, Observer {
             progressBarId.visibility = if (it) View.VISIBLE else View.GONE
         })
 
-        mainActivityViewModel.message.observe(this, Observer {
+        mainActivityViewModel.getMessage().observe(this, Observer {
             Toast.makeText(this, it, Toast.LENGTH_LONG).show()
         })
 
