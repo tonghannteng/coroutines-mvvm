@@ -1,4 +1,4 @@
-package com.tengtonghann.android.coroutines_mvvm.retrofit
+package com.tengtonghann.android.coroutines_mvvm.model.retrofit
 
 
 import com.google.gson.annotations.SerializedName
