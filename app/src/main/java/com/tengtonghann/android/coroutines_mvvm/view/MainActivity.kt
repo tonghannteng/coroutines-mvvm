@@ -29,16 +29,18 @@ class MainActivity : AppCompatActivity() {
             recyclerViewPost.also {
                 it.layoutManager = LinearLayoutManager(this)
                 it.setHasFixedSize(true)
-                it.adapter = PostAdapter(postListResponse)
+                it.adapter = postListResponse.body()?.let {
+                    it1 -> PostAdapter(it1)
+                }
             }
 //            Log.d(TAG, it.size.toString())
         })
 
-        mainActivityViewModel.getProgressBar().observe(this, Observer {
+        mainActivityViewModel.progressBar.observe(this, Observer {
             progressBarId.visibility = if (it) View.VISIBLE else View.GONE
         })
 
-        mainActivityViewModel.getMessage().observe(this, Observer {
+        mainActivityViewModel.message.observe(this, Observer {
             Toast.makeText(this, it, Toast.LENGTH_LONG).show()
         })
 

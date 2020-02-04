@@ -2,23 +2,26 @@ package com.tengtonghann.android.coroutines_mvvm.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.liveData
 import com.tengtonghann.android.coroutines_mvvm.model.repository.PostRepository
-import com.tengtonghann.android.coroutines_mvvm.model.retrofit.Post
+import java.io.IOException
 
 class MainActivityViewModel : ViewModel() {
 
+    var progressBar = MutableLiveData<Boolean>()
+    var message = MutableLiveData<String>()
     private val postRepository = PostRepository()
 
-    fun getPostResponse(): MutableLiveData<List<Post>> {
-        return postRepository.getPostResponse()
-    }
+    fun getPostResponse() = liveData {
+        try {
+            emit(postRepository.getPostResponse())
+            progressBar.postValue(false)
+            message.postValue("Successfully")
+        } catch (ioException: IOException) {
+            progressBar.postValue(false)
+            message.postValue("Failed")
+        }
 
-    fun getProgressBar(): MutableLiveData<Boolean> {
-        return postRepository.progressBar
-    }
-
-    fun getMessage(): MutableLiveData<String> {
-        return postRepository.message
     }
 
 }
